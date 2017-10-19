@@ -1,0 +1,9 @@
+apply from: '../../xmlbeans.gradle'
+
+repositories {
+	mavenCentral()
+}
+
+compileJava {
+	dependsOn compileXmlSchemas
+}

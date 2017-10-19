@@ -1,0 +1,35 @@
+apply plugin: 'java'
+
+configurations {
+	xmlbeans
+}
+
+sourceSets {
+    schemas {
+        ext.srcDir = 'src/main/schemas'
+        output.classesDir =  "${buildDir}/gen-classes/xmlbeans"
+        output.resourcesDir =  "${buildDir}/gen-src/xmlbeans"
+    }
+}
+
+dependencies {
+    xmlbeans 'org.apache.xmlbeans:xmlbeans:2.5.0'
+    compile sourceSets.schemas.output
+}
+
+task compileXmlSchemas {
+	dependsOn configurations.xmlbeans.getTaskDependencyFromProjectDependency(true, "compileJava")
+
+	doLast{
+		ant.taskdef(
+                name:'xmlbean',
+                classname: 'org.apache.xmlbeans.impl.tool.XMLBean',
+                classpath: configurations.xmlbeans.asPath
+        )
+		ant.xmlbean(
+                schema: sourceSets.schemas.srcDir,
+                classgendir: sourceSets.schemas.output.classesDir,
+                srcgendir: sourceSets.schemas.output.resourcesDir,
+                classpath: configurations.xmlbeans.asPath)
+	}
+}
